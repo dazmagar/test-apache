@@ -16,7 +16,7 @@ ENV APACHE_LOG_DIR   /var/log/apache2
 RUN mkdir -p $APACHE_RUN_DIR
 RUN mkdir -p $APACHE_LOCK_DIR
 RUN mkdir -p $APACHE_LOG_DIR
-
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
 RUN echo '<!doctype html><html><body><h1>'$NEWPARAM'</h1></body></html>' | tee /var/www/html/index.html
 
