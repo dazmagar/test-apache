@@ -11,7 +11,7 @@ steps:
   - |
     docker pull gcr.io/$PROJECT_ID/${_PROJECT_NAME}:latest || echo "Latest not exist"
 
-- name: gcr.io/$PROJECT_ID/gcloud-sops
+- name: eu.gcr.io/$PROJECT_ID/gcloud-sops
   id: deploy-decrypt-env
   entrypoint: /bin/bash
   waitFor:
