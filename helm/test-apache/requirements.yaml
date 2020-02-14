@@ -1,4 +1,4 @@
 dependencies:
-  - name: test-apache-app
-    repository: file://../test-apache/test-apache-app
+  - name: test-apache
+    repository: file://../test-apache/test-apache
     version: 0.0.1

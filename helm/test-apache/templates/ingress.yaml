@@ -8,7 +8,7 @@ metadata:
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
   rules:
-  - host: test-apache-app.{{ .Values.global.env }}.{{ .Values.global.domain }}
+  - host: test-apache.{{ .Values.global.env }}.{{ .Values.global.domain }}
     http:
       paths:
       - backend:
@@ -16,5 +16,5 @@ spec:
           servicePort: {{ .Values.global.service.port }}
   tls:
   - hosts:
-    - test-apache-app.{{ .Values.global.env }}.{{ .Values.global.domain }}
+    - test-apache.{{ .Values.global.env }}.{{ .Values.global.domain }}
     secretName: tls-{{ .Values.global.env }}-secret
