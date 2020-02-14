@@ -17,7 +17,7 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: {{ template "test-apach.fullname" . }}
-        smartersorting.com/default_cpu_alert: "true"
+        dazmagar.com/default_cpu_alert: "true"
     spec:
       containers:
         - name: {{ template "test-apach.fullname" . }}
