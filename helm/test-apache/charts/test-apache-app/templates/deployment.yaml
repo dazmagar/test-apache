@@ -1,9 +1,9 @@
 apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
-  name: {{ template "test-apach.fullname" . }}
+  name: {{ template "test-apache.fullname" . }}
 spec:
-  replicas: {{ .Values.global.demoReplicas }}
+  replicas: {{ .Values.global.testapacheappReplicas }}
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -12,16 +12,16 @@ spec:
   revisionHistoryLimit: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ template "test-apach.fullname" . }}
+      app.kubernetes.io/name: {{ template "test-apache.fullname" . }}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ template "test-apach.fullname" . }}
+        app.kubernetes.io/name: {{ template "test-apache.fullname" . }}
         dazmagar.com/default_cpu_alert: "true"
     spec:
       containers:
-        - name: {{ template "test-apach.fullname" . }}
-          image: "{{ .Values.global.image.repository }}/{{ template "test-apach.fullname" . }}:{{ .Values.global.image.tag }}"
+        - name: {{ template "test-apache.fullname" . }}
+          image: "{{ .Values.global.image.repository }}/{{ template "test-apache.fullname" . }}:{{ .Values.global.image.tag }}"
           imagePullPolicy: {{ .Values.global.image.pullPolicy }}
           command: 
           - sh

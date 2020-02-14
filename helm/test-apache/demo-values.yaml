@@ -1,14 +1,12 @@
 global:
-  demoReplicas: 1
+  testapacheappReplicas: 1
 
   env:
+  domain: dazmagar.com
   image:
-    repository: gcr.io/playground-268211
+    repository: gcr.io/playground-268211/
     pullPolicy: Always
 
   service:
     type: NodePort
-    port: 8081
-
-all:
-  enabled: true
+    port: 80

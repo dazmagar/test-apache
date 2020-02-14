@@ -1,5 +1,4 @@
 dependencies:
   - name: demo
-    repository: file://../test-apach/demo
+    repository: file://../test-apache/test-apache-app
     version: 0.0.1
-    condition: all.enabled

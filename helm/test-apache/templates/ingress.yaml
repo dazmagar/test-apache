@@ -4,13 +4,17 @@ metadata:
   name: {{ .Values.global.env }}
   annotations:
     kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/rewrite-target: /$1
-    nginx.ingress.kubernetes.io/ssl-redirect: 'false'
+    kubernetes.io/tls-acme: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
   rules:
-  - http:
+  - host: test-apache-app.{{ .Values.global.env }}.{{ .Values.global.domain }}
+    http:
       paths:
-      - path: /?(index.html)
-        backend:
-          serviceName: {{ template "test-apach.fullname" . }}
+      - backend:
+          serviceName: {{ template "test-apache.fullname" . }}
           servicePort: {{ .Values.global.service.port }}
+  tls:
+  - hosts:
+    - test-apache-app.{{ .Values.global.env }}.{{ .Values.global.domain }}
+    secretName: tls-{{ .Values.global.env }}-secret

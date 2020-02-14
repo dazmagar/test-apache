@@ -10,7 +10,7 @@ Expand the name of the chart.
 Create a default fully qualified name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
-{{- define "test-apach.fullname" -}}
-{{- $name := default "test-apach" -}}
-{{- printf "%s" $name -}}
+{{- define "test-apache.fullname" -}}
+{{- $name := default "test-apache-app" -}}
+{{- printf "%s" $name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
