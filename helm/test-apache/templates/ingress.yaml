@@ -11,7 +11,8 @@ spec:
   - host: test-apache.{{ .Values.global.env }}.{{ .Values.global.domain }}
     http:
       paths:
-      - backend:
+      - path: /?(index.html)
+        backend:
           serviceName: {{ template "test-apache.fullname" . }}
           servicePort: {{ .Values.global.service.port }}
   tls:
