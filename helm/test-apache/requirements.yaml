@@ -1,0 +1,5 @@
+dependencies:
+  - name: demo
+    repository: file://../test-apach/demo
+    version: 0.0.1
+    condition: all.enabled

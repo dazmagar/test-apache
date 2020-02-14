@@ -1,0 +1,4 @@
+apiVersion: v1
+name: test-apache
+version: 0.0.1
+description: test apache project

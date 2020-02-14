@@ -1,0 +1,4 @@
+creation_rules:
+        # gcp files using GCP KMS
+        - path_regex: test
+          gcp_kms: projects/playground-268211/locations/global/keyRings/pg-key-ring/cryptoKeys/test-key

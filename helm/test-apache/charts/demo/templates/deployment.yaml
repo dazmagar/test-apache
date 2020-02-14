@@ -1,0 +1,49 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ template "test-apach.fullname" . }}
+spec:
+  replicas: {{ .Values.global.demoReplicas }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  revisionHistoryLimit: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ template "test-apach.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ template "test-apach.fullname" . }}
+        smartersorting.com/default_cpu_alert: "true"
+    spec:
+      containers:
+        - name: {{ template "test-apach.fullname" . }}
+          image: "{{ .Values.global.image.repository }}/{{ template "test-apach.fullname" . }}:{{ .Values.global.image.tag }}"
+          imagePullPolicy: {{ .Values.global.image.pullPolicy }}
+          command: 
+          - sh
+          - -c
+          - |
+            /bin/bash <<'EOF'
+            echo '<!doctype html><html><body><h1>'$PARAM'</h1></body></html>' | tee /var/www/html/index.html
+            /usr/sbin/apache2 -D FOREGROUND
+            EOF
+          env:
+          - name: PARAM
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Release.Name }}
+                key: TEXT
+          ports:
+            - name: http
+              containerPort: 80
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi

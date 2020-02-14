@@ -1,0 +1,113 @@
+substitutions:
+  _PROJECT_NAME: test-apache
+
+steps:
+    
+- name: gcr.io/cloud-builders/docker
+  id: pull-latest
+  entrypoint: /bin/bash
+  args:
+  - '-c'
+  - |
+    docker pull gcr.io/$PROJECT_ID/${_PROJECT_NAME}:latest || echo "Latest not exist"
+
+- name: gcr.io/$PROJECT_ID/gcloud-sops
+  id: deploy-decrypt-env
+  entrypoint: /bin/bash
+  waitFor:
+    - '-'
+  args:
+  - -c
+  - |
+    [ -z "$_DEPLOY_CLUSTER" ] && echo "Skipping Deployment" && exit 0
+    sops -d .env/test.sops.env | cat - .env/test.env > .env/test.all.env
+    cat .env/test.all.env
+
+- name: gcr.io/cloud-builders/docker
+  id: build-app
+  waitFor:
+    - pull-latest
+    - deploy-decrypt-env
+  entrypoint: /bin/bash
+  args:
+  - -c
+  - |
+    export PARAM=$(cat .env/test.all.env | grep TEXT)
+    docker build --cache-from gcr.io/$PROJECT_ID/${_PROJECT_NAME}:latest \
+      -t gcr.io/$PROJECT_ID/${_PROJECT_NAME}:latest \
+      -t gcr.io/$PROJECT_ID/${_PROJECT_NAME}:sha-${SHORT_SHA} \
+      -f ${_PROJECT_NAME}.Dockerfile --build-arg PARAM .
+
+- name: gcr.io/cloud-builders/docker
+  id: push-images
+  waitFor:
+    - build-app
+  entrypoint: /bin/bash
+  args:
+  - '-c'
+  - |
+    docker push gcr.io/$PROJECT_ID/${_PROJECT_NAME}:latest
+    docker push gcr.io/$PROJECT_ID/${_PROJECT_NAME}:sha-${SHORT_SHA}
+
+# - name: gcr.io/cloud-builders/docker
+#   id: test-workspace
+#   waitFor:
+#     - push-images
+#   entrypoint: /bin/bash
+#   args:
+#   - '-c'
+#   - |
+#     ln -s /workspace/ /${_PROJECT_NAME}
+#     cd /${_PROJECT_NAME}
+#     ls -lah
+
+- name: gcr.io/cloud-builders/gcloud
+  id: cluster-credentials
+  waitFor:
+    - '-'
+  entrypoint: /bin/bash
+  args:
+  - -c
+  - |
+    [ -z "$_DEPLOY_CLUSTER" ] && echo "Skipping Deployment" && exit 0
+    gcloud container clusters get-credentials --region=$_REGION $_DEPLOY_CLUSTER
+
+- name: gcr.io/cloud-builders/kubectl
+  id: deploy-prepare-env
+  waitFor:
+    - deploy-decrypt-env
+  entrypoint: /bin/bash
+  args:
+  - '-c'
+  - |
+    [ -z "$_DEPLOY_CLUSTER" ] && echo "Skipping Deployment" && exit 0
+    kubectl create ns ${_PROJECT_NAME}
+    kubectl create configmap ${_PROJECT_NAME} --from-env-file=.env/test.all.env -n ${_PROJECT_NAME} --dry-run -o yaml | kubectl apply -f -
+    kubectl describe cm ${_PROJECT_NAME} -n ${_PROJECT_NAME}
+    
+- name: dtzar/helm-kubectl:2.16.1
+  id: helm-apply
+  waitFor:
+    - deploy-prepare-env
+    - push-images
+  entrypoint: /bin/bash
+  args:
+  - -c
+  - |
+    [ -z "$_DEPLOY_CLUSTER" ] && echo "Skipping Deployment" && exit 0
+    helm template --name ${_PROJECT_NAME} -f ./helm/${_PROJECT_NAME}/${_ENV}-values.yaml \
+      --set global.image.repository=gcr.io/$PROJECT_ID \
+      --set global.image.tag=sha-${SHORT_SHA} \
+      --set global.env=${_ENV} ./helm/${_PROJECT_NAME} \
+      | kubectl -n ${_PROJECT_NAME} apply -f -
+
+timeout: 2000s
+tags:
+  - ${BRANCH_NAME}
+  - sha-${SHORT_SHA}
+options:
+  logStreamingOption: STREAM_ON
+  machineType: 'N1_HIGHCPU_8'
+  env:
+    - SHORT_SHA=${SHORT_SHA}
+    - BRANCH_NAME=${BRANCH_NAME}

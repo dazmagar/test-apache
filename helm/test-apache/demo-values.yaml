@@ -1,0 +1,14 @@
+global:
+  demoReplicas: 1
+
+  env:
+  image:
+    repository: gcr.io/playground-268211
+    pullPolicy: Always
+
+  service:
+    type: NodePort
+    port: 8081
+
+all:
+  enabled: true
