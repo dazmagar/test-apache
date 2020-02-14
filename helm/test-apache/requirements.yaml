@@ -1,4 +1,4 @@
 dependencies:
-  - name: demo
+  - name: test-apache-app
     repository: file://../test-apache/test-apache-app
     version: 0.0.1
