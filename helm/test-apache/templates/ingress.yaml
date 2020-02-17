@@ -20,5 +20,4 @@ spec:
   tls:
   - hosts:
     - test-apache.{{ .Values.global.env }}.{{ .Values.global.domain }}
-    secretName: tls-test-secret
-    #secretName: tls-{{ .Values.global.env }}-secret
+    secretName: tls-{{ .Values.global.env }}-secret
