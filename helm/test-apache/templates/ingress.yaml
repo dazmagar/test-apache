@@ -3,6 +3,7 @@ kind: Ingress
 metadata:
   name: {{ .Values.global.env }}
   annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
     kubernetes.io/ingress.class: nginx
     kubernetes.io/tls-acme: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /$1
@@ -19,4 +20,5 @@ spec:
   tls:
   - hosts:
     - test-apache.{{ .Values.global.env }}.{{ .Values.global.domain }}
-    secretName: tls-{{ .Values.global.env }}-secret
+    secretName: tls-test-secret
+    #secretName: tls-{{ .Values.global.env }}-secret
