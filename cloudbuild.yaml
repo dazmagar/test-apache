@@ -84,6 +84,7 @@ steps:
     kubectl create ns ${_PROJECT_NAME}
     kubectl create configmap ${_PROJECT_NAME} --from-env-file=.env/test.all.env -n ${_PROJECT_NAME} --dry-run -o yaml | kubectl apply -f -
     kubectl describe cm ${_PROJECT_NAME} -n ${_PROJECT_NAME}
+    kubectl get secret tls-${_ENV}-secret --namespace=default --export -o yaml | kubectl apply -n ${_PROJECT_NAME} -f -
     
 - name: dtzar/helm-kubectl:2.16.1
   id: helm-apply
