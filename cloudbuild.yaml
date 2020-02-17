@@ -81,9 +81,8 @@ steps:
   - '-c'
   - |
     [ -z "$_DEPLOY_CLUSTER" ] && echo "Skipping Deployment" && exit 0
-    kubectl create ns ${_PROJECT_NAME}
-    kubectl create configmap ${_PROJECT_NAME} --from-env-file=.env/test.all.env -n ${_PROJECT_NAME} --dry-run -o yaml | kubectl apply -f -
-    kubectl describe cm ${_PROJECT_NAME} -n ${_PROJECT_NAME}
+    kubectl create ns ${_PROJECT_NAME}${_NAMESPACE_SUFFIX}
+    kubectl create configmap ${_PROJECT_NAME} --from-env-file=.env/test.all.env -n ${_PROJECT_NAME}${_NAMESPACE_SUFFIX} --dry-run -o yaml | kubectl apply -f -
     
 #    kubectl get secret tls-${_ENV}-secret --namespace=default --export -o yaml | kubectl apply -n ${_PROJECT_NAME} -f -
     
@@ -101,7 +100,7 @@ steps:
       --set global.image.repository=gcr.io/$PROJECT_ID \
       --set global.image.tag=sha-${SHORT_SHA} \
       --set global.env=${_ENV} ./helm/${_PROJECT_NAME} \
-      | kubectl -n ${_PROJECT_NAME} apply -f -
+      | kubectl -n ${_PROJECT_NAME}${_NAMESPACE_SUFFIX} apply -f -
 
 timeout: 2000s
 tags:
