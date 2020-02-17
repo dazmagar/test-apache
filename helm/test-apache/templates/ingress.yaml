@@ -6,7 +6,7 @@ metadata:
     kubernetes.io/ingress.class: nginx
     kubernetes.io/tls-acme: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /$1
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
   rules:
   - host: test-apache.{{ .Values.global.env }}.{{ .Values.global.domain }}
