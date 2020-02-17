@@ -83,9 +83,7 @@ steps:
     [ -z "$_DEPLOY_CLUSTER" ] && echo "Skipping Deployment" && exit 0
     kubectl create ns ${_PROJECT_NAME}${_NAMESPACE_SUFFIX}
     kubectl create configmap ${_PROJECT_NAME} --from-env-file=.env/test.all.env -n ${_PROJECT_NAME}${_NAMESPACE_SUFFIX} --dry-run -o yaml | kubectl apply -f -
-    
-#    kubectl get secret tls-${_ENV}-secret --namespace=default --export -o yaml | kubectl apply -n ${_PROJECT_NAME} -f -
-    
+
 - name: dtzar/helm-kubectl:2.16.1
   id: helm-apply
   waitFor:
