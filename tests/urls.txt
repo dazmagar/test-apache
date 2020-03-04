@@ -1,0 +1,2 @@
+https://test-apache.prod.dazmagar.com/index.html
+https://test-apache.dev.dazmagar.com/index.html
